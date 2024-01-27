@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -63,17 +65,17 @@ fun LibraryScreen(
             onValueChange = vm::onQueryUpdate,
             label = { Text(text = "Character search") },
             placeholder = { Text(text = "Character") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         )
 
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
             when (result) {
                 is NetworkResult.Initial -> {
-                    Text(text = "Search for a character")
+                    Text(text = "Search for a character", modifier = Modifier.padding(top = 300.dp))
                 }
 
                 is NetworkResult.Success -> {
@@ -81,7 +83,7 @@ fun LibraryScreen(
                 }
 
                 is NetworkResult.Loading -> {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator( modifier = Modifier.padding(top = 300.dp))
                 }
 
                 is NetworkResult.Error -> {

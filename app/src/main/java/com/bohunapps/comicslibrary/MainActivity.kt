@@ -2,6 +2,7 @@ package com.bohunapps.comicslibrary
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -14,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -25,6 +27,7 @@ import com.bohunapps.comicslibrary.view.CharacterDetailScreen
 import com.bohunapps.comicslibrary.view.CharactersBottomNav
 import com.bohunapps.comicslibrary.view.CollectionScreen
 import com.bohunapps.comicslibrary.view.LibraryScreen
+import com.bohunapps.comicslibrary.viewmodel.CollectionDbViewModel
 import com.bohunapps.comicslibrary.viewmodel.LibraryApiViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,6 +42,7 @@ sealed class Destination(val route: String){
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val lvm by viewModels<LibraryApiViewModel>()
+    private val cvm by viewModels<CollectionDbViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -48,7 +52,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    CharactersScaffold(navController = navController, lvm)
+                    CharactersScaffold(navController = navController, lvm, cvm)
                 }
             }
         }
@@ -58,7 +62,9 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CharactersScaffold(navController: NavHostController, lvm: LibraryApiViewModel){
+fun CharactersScaffold(navController: NavHostController, lvm: LibraryApiViewModel, cvm: CollectionDbViewModel){
+    val ctx = LocalContext.current
+
     Scaffold(
         bottomBar = {
             CharactersBottomNav(navController = navController)
@@ -68,8 +74,13 @@ fun CharactersScaffold(navController: NavHostController, lvm: LibraryApiViewMode
             composable(Destination.Library.route){ LibraryScreen(navController,lvm, paddingValues)}
             composable(Destination.Collection.route){ CollectionScreen() }
             composable(Destination.CharacterDetail.route){ navBackStackEntry->
-                val id = navBackStackEntry.arguments?.getString("characterId")
-                CharacterDetailScreen()
+                val id = navBackStackEntry.arguments?.getString("characterId")?.toIntOrNull()
+                if(id == null){
+                    Toast.makeText(ctx, "Character id is required", Toast.LENGTH_SHORT).show()
+                }else{
+                    lvm.retrieveSingleCharacter(id)
+                    CharacterDetailScreen(lvm, cvm,paddingValues,navController)
+                }
             }
         }
     }
