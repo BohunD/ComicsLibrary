@@ -42,6 +42,7 @@ import com.bohunapps.comicslibrary.CharacterImage
 import com.bohunapps.comicslibrary.Destination
 import com.bohunapps.comicslibrary.model.CharactersApiResponse
 import com.bohunapps.comicslibrary.model.api.NetworkResult
+import com.bohunapps.comicslibrary.model.connectivity.ConnectivityObservable
 import com.bohunapps.comicslibrary.viewmodel.LibraryApiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +54,8 @@ fun LibraryScreen(
 ) {
     val result by vm.result.collectAsState()
     val text = vm.queryText.collectAsState()
+    val networkAvailable =
+        vm.networkAvailable.observe().collectAsState(ConnectivityObservable.Status.Available)
 
     Column(
         modifier = Modifier
@@ -60,6 +63,22 @@ fun LibraryScreen(
             .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        if (networkAvailable.value == ConnectivityObservable.Status.Unavailable) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Red),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Network unavailable",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
         OutlinedTextField(
             value = text.value,
             onValueChange = vm::onQueryUpdate,
@@ -83,7 +102,7 @@ fun LibraryScreen(
                 }
 
                 is NetworkResult.Loading -> {
-                    CircularProgressIndicator( modifier = Modifier.padding(top = 300.dp))
+                    CircularProgressIndicator(modifier = Modifier.padding(top = 300.dp))
                 }
 
                 is NetworkResult.Error -> {
@@ -148,7 +167,7 @@ fun ShowCharactersList(
                                     .padding(4.dp)
                                     .width(100.dp)
                             )
-                            
+
                             Column(modifier = Modifier.padding(4.dp)) {
                                 Text(
                                     text = title ?: "",
@@ -157,7 +176,7 @@ fun ShowCharactersList(
                                 )
                             }
                         }
-                        Text(text = desc?:"", maxLines = 4, fontSize = 14.sp)
+                        Text(text = desc ?: "", maxLines = 4, fontSize = 14.sp)
                     }
                 }
             })
