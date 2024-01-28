@@ -9,4 +9,11 @@ interface CollectionDbRepo {
     suspend fun updateCharacterInRepo(character: DbCharacter)
     suspend fun deleteCharacterFromRepo(character: DbCharacter)
 
+    suspend fun getAllNotes(): Flow<List<DbNote>>
+    suspend fun getNotesFromRepo(characterId: Int): Flow<List<DbNote>>
+    suspend fun addNoteToRepo(note: DbNote)
+    suspend fun updateNoteInRepo(note: DbNote)
+    suspend fun deleteNoteFromRepo(note: DbNote)
+    suspend fun deleteAllCharacterNotes(characterId: Int)
+
 }

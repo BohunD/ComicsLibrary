@@ -9,6 +9,7 @@ import com.bohunapps.comicslibrary.model.db.CollectionDb
 import com.bohunapps.comicslibrary.model.db.CollectionDbRepo
 import com.bohunapps.comicslibrary.model.db.CollectionDbRepoImpl
 import com.bohunapps.comicslibrary.model.db.Constants.DB
+import com.bohunapps.comicslibrary.model.db.NoteDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +32,12 @@ class HiltModule {
     fun provideCharacterDao(collectionDb: CollectionDb) = collectionDb.characterDao()
 
     @Provides
-    fun provideDbRepoImpl(characterDao: CharacterDao): CollectionDbRepo =
-        CollectionDbRepoImpl(characterDao)
+    fun provideNoteDao(collectionDb: CollectionDb) = collectionDb.notesDao()
+
+    @Provides
+    fun provideDbRepoImpl(characterDao: CharacterDao, noteDao: NoteDao): CollectionDbRepo =
+        CollectionDbRepoImpl(characterDao, noteDao)
+
+
 }
 
