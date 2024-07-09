@@ -1,4 +1,4 @@
-An application that gives a user information about Marvel characters and allows to add them to collection and write notes about each character in collection.
+The app, which provides the user with information about Marvel characters, allows them to be added to a collection and allows users to write notes about each character in the collection.
 Used tools: 
 - Jetpack Compose
 - Jetpack Navigation
